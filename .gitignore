@@ -1,0 +1,4 @@
+*.o
+*~
+lpilot
+pilot.so
