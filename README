@@ -1,0 +1,139 @@
+			USAGE
+
+Luapilot builds as two components: a Lua/C module (pilot.so) and a stand alone
+executable (lpilot). Pilot.so is provided for environments which already have
+a Lua interpreter and wish to load Pilot from inside it; lpilot is a simple
+launcher that preloads the pilot library and then (in effect) calls dofile on
+its first command line argument.
+
+Thus, the two commands are loosely equivalent:
+
+    mpiexec lua -lpilot foo.lua
+
+    mpiexec ./lpilot foo.lua
+
+
+
+    	              API REFERENCE
+
+NOTE: this is a very quick and dirty reference that assumes prior knowledge of
+Pilot. At some point in the future this will be replaced with a comprehensive
+manual with no such assumption, but that time is not now.
+
+The library manifests itself in global table "pilot". If using the lpilot
+executable, it is already loaded; if using the module, you can get it with
+
+    require "pilot"
+
+
+
+        Variables
+
+pilot.main		equivalent to PI_MAIN in C; process 0.
+pilot.worldsize		the number of nodes available to spawn processes on.
+
+
+
+        Functions
+
+
+    pilot.configure(...)
+
+Equivalent to PI_Configure. Present only in the module, and must be called
+before using any other pilot functions or accessing any pilot variables.
+Returns the worldsize.
+
+
+    pilot.process(fn, ...)
+
+Initialize a new process running fn. Returns a new PI_PROCESS; this process
+handle will be passed to the process function when it starts up, immediately
+followed by all of the varargs. Note that setting fields of the process is
+permissible, and any fields set before startAll is called will be available
+to the process:
+
+    function foo(self, n)
+    	print(self.name, n)
+    end
+
+    p1 = pilot.process(foo, 0)
+    p1.name = "p1"
+
+This allows you to store process-associated channels and whatnot in the
+process structure itself.
+
+
+    pilot.startAll()
+
+Launch all created processes. Except in P0 (main), this function does not
+return.
+
+
+    pilot.stopMain(n)
+
+Suspend main until all other processes have returned, then shut down
+Pilot. Returns n (a number) to MPI as the process completion code.
+
+
+    pilot.log(fmt, ...)
+
+I wouldn't use this just yet.
+
+
+    pilot.isLogging()
+
+Returns true if logging is enabled, false otherwise.
+
+
+    pilot.startTime()
+
+Marks the current time. Combine with endTime() for time interval measurement.
+
+
+    pilot.endTime()
+
+Returns the elapsed time since the last call to startTime, in seconds.
+
+
+    pilot.setName(object, name)
+
+Sets the "friendly name" of a Pilot object (PI_PROCESS, PI_CHANNEL, or
+PI_BUNDLE). If name is omitted, sets it to ''.
+
+
+    pilot.getName(object)
+
+Returns the "friendly name" of a Pilot object. If no object is specified,
+returns the name of the current process.
+
+
+    pilot.abort(message)
+
+Abort the application, reporting message as the reason.
+
+
+    pilot.channel(from, to)
+
+Create a communication channel between 'from' and 'to, which must be
+PI_PROCESSes. Returns a new PI_CHANNEL which 'from' can call write on and 'to'
+can call read on.
+
+
+    pilot.write(channel, ...)
+
+Write one or more objects to a channel. At present strings, numbers, booleans,
+and nil are permitted.
+
+
+    pilot.read(channel, n)
+
+Read n objects from a channel and return them all. n, if omitted, defaults to
+1. If there are not enough objects in the channel, blocks until there are.
+
+
+    pilot.channelHasData(channel)
+
+Returns true if the channel contains at least one object to read (ie, if
+read(channel) would not block), and false otherwise.
+
+

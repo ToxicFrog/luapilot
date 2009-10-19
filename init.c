@@ -98,7 +98,7 @@ const luaL_Reg lr_pilot[] = {
 /**
  * Library entry point.
  * Loads all interface functions into global table pilot,
- * initializes the PI_PROCESS, [FIXME: PI_BUNDLE, and PI_CHANNEL] metatables,
+ * initializes the PI_PROCESS and PI_CHANNEL [FIXME: PI_BUNDLE] metatables,
  * and creates a process wrapper for PI_MAIN, as pilot.main.
  *
  * Returns the global pilot table.
