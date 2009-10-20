@@ -84,8 +84,13 @@ void lpi_read_object(lua_State * L, PI_CHANNEL * chan)
             }
 
             break;
+        case LUA_TUSERDATA:
+            lpi_read_object(L, chan); /* read __recv */
+            lpi_read_object(L, chan); /* read arg */
+            lua_call(L, 1, 1);        /* call */
+            break;
         default:
-            luaL_error("Unknown type on the wire: %s", lua_typename(L, t));
+            luaL_error(L, "Unknown type on the wire: %s", lua_typename(L, t));
             break;
     }
 

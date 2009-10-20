@@ -42,48 +42,68 @@ void lpi_write_object(lua_State * L, int index, PI_CHANNEL * chan)
 {
     int n;
 
+
+    if (luaL_getmetafield(L, index, "__recv"))
+    {
+        /* transmit __recv */
+        lpi_write_header(chan, LUA_TUSERDATA, (lua_Number)0);
+        lpi_write_object(L, lua_gettop(L), chan);
+        lua_pop(L, 1);
+    }
+        
+    
+    if (luaL_getmetafield(L, index, "__send"))
+    {
+        lua_pushvalue(L, index);
+        lua_call(L, 1, 1);
+        lpi_write_object(L, lua_gettop(L), chan);
+        lua_pop(L, 1);
+        return;
+    }
+            
+    
     switch(lua_type(L, index))
-        {
-	case LUA_TNIL:
-	    lpi_write_header(chan, LUA_TNIL, 0.0);
-	    break;
-	case LUA_TNUMBER:
-	    lpi_write_header(chan, LUA_TNUMBER, lua_tonumber(L, index));
-	    break;
-	case LUA_TBOOLEAN:
-	    lpi_write_header(chan, LUA_TBOOLEAN, (lua_Number)lua_toboolean(L, index));
-	    break;
-	case LUA_TSTRING:
-	    lpi_write_header(chan, LUA_TSTRING, (lua_Number)lua_objlen(L, index));
-	    lpi_write_data(chan, lua_tostring(L, index), lua_objlen(L, index));
-	    break;
-	case LUA_TFUNCTION:
-	    lua_pushvalue(L, index);
-	    n = lua_gettop(L);
-	    lua_dump(L, lpi_functionWriter, NULL);
-	    n = lua_gettop(L) - n;
-	    lua_concat(L, n);
+    {
+        case LUA_TNIL:
+            lpi_write_header(chan, LUA_TNIL, (lua_Number)0);
+            break;
+        case LUA_TNUMBER:
+            lpi_write_header(chan, LUA_TNUMBER, lua_tonumber(L, index));
+            break;
+        case LUA_TBOOLEAN:
+            lpi_write_header(chan, LUA_TBOOLEAN, (lua_Number)lua_toboolean(L, index));
+            break;
+        case LUA_TSTRING:
+            lpi_write_header(chan, LUA_TSTRING, (lua_Number)lua_objlen(L, index));
+            lpi_write_data(chan, lua_tostring(L, index), lua_objlen(L, index));
+            break;
+        case LUA_TFUNCTION:
+            lua_pushvalue(L, index);
+            n = lua_gettop(L);
+            lua_dump(L, lpi_functionWriter, NULL);
+            n = lua_gettop(L) - n;
+            lua_concat(L, n);
             lpi_write_header(chan, LUA_TFUNCTION, (lua_Number)lua_objlen(L, -1));
             lpi_write_data(chan, lua_tostring(L, -1), lua_objlen(L, -1));
-	    lua_pop(L, 2);
-	    break;
-	case LUA_TTABLE:
+            lua_pop(L, 2);
+            break;
+        case LUA_TTABLE:
             lpi_write_table(L, index, chan);
             break;
-	default:
-	    luaL_typerror(L, index, "nil, number, boolean, or string");
-	    break;
-        }
-}
-
-int lpi_write(lua_State * L)
-{
-    PI_CHANNEL * chan = *(PI_CHANNEL **)luaL_checkudata(L, 1, "PI_CHANNEL *");
-
-    for (int i = 2; i <= lua_gettop(L); ++i)
-    {
-	lpi_write_object(L, i, chan);
+        default:
+            luaL_typerror(L, index, "nil, number, boolean, or string");
+            break;
     }
-
-    return 0;
 }
+
+        int lpi_write(lua_State * L)
+        {
+            PI_CHANNEL * chan = *(PI_CHANNEL **)luaL_checkudata(L, 1, "PI_CHANNEL *");
+
+            for (int i = 2; i <= lua_gettop(L); ++i)
+            {
+                lpi_write_object(L, i, chan);
+            }
+
+            return 0;
+        }
