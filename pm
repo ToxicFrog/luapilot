@@ -34,20 +34,12 @@ extract_section() {
 	cat $GZFILE | cat
 }
 
-# if the system already has lua installed, use that
-
-#if type -p lua; then
-#    extract_section script | lua /dev/stdin "$@"
-#    exit $?
-#fi
-
 # If the bootstrap's built, run it.
 
 if [ "$PMEXEC" -nt "$THISFILE" ]; then
-    extract_section script | "$PMEXEC" /dev/stdin "$@"
-    exit $?
+	extract_section script | "$PMEXEC" /dev/stdin "$@"
+	exit $?
 fi
-
 
 # Otherwise, compile it and restart.
 

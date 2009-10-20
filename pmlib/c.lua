@@ -44,4 +44,3 @@ program = simple {
     command = { "%LINK%" };
     outputs = { "%U%-%I%" };
 }
-

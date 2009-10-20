@@ -46,3 +46,7 @@ pilotlib = sharedlib {
 
 default = group { lpilot, pilotlib }
 
+test = simple {
+     command = "mpiexec -c 4 lua test.lua";
+     outputs = {"%U%"};
+}
