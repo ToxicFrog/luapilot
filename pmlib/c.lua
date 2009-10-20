@@ -13,6 +13,14 @@ cfile = simple {
     class = "cfile";
     command = { "%COMPILE%" };
     outputs = { "%U%-%I%.o" };
+
+    __init = function(self, f)
+        if type(f) == 'string' then
+            f = (SRCDIR or "")..f
+        end
+
+        return simple.__init(self, f)
+    end;
 }
 
 lib = simple {

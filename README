@@ -1,4 +1,15 @@
-			USAGE
+
+                      BUILDING
+
+Luapilot uses the Prime Mover build system. It is a self-contained build
+system which will bootstrap itself the first time it is run. To build
+luapilot, simply run it:
+
+    ./pm
+
+
+
+                      USAGE
 
 Luapilot builds as two components: a Lua/C module (pilot.so) and a stand alone
 executable (lpilot). Pilot.so is provided for environments which already have

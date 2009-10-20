@@ -18,24 +18,23 @@ LIBS            = { "-llua", "-lpilot" }
 SRCDIR          = "src/"
 
 sources = {
-    cfile "%SRCDIR%/init.c";
-    cfile "%SRCDIR%/lpi_abort.c";
-    cfile "%SRCDIR%/lpi_channel.c";
-    cfile "%SRCDIR%/lpi_log.c";
-    cfile "%SRCDIR%/lpi_names.c";
-    cfile "%SRCDIR%/lpi_process.c";
-    cfile "%SRCDIR%/lpi_read.c";
-    cfile "%SRCDIR%/lpi_time.c";
-    cfile "%SRCDIR%/lpi_util.c";
-    cfile "%SRCDIR%/lpi_write.c";
-
+    cfile "init.c";
+    cfile "lpi_abort.c";
+    cfile "lpi_channel.c";
+    cfile "lpi_log.c";
+    cfile "lpi_names.c";
+    cfile "lpi_process.c";
+    cfile "lpi_read.c";
+    cfile "lpi_time.c";
+    cfile "lpi_util.c";
+    cfile "lpi_write.c";
 }       
 
 objects = group(sources)
 
 lpilot = program {
     install = pm.install "lpilot";
-    cfile "%SRCDIR%/lpilot.c";
+    cfile "lpilot.c";
     objects;
 }
 
