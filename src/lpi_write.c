@@ -21,6 +21,23 @@ int lpi_functionWriter(lua_State * L, const void * buf, size_t size, void * unus
     return 0;
 }
 
+void lpi_write_object(lua_State *, int, PI_CHANNEL *);
+
+void lpi_write_table(lua_State * L, int index, PI_CHANNEL * chan)
+{
+    lpi_write_header(chan, LUA_TTABLE, LPI_TABLE_START);
+
+    lua_pushnil(L);
+    while (lua_next(L, index))
+    {
+        lpi_write_object(L, lua_gettop(L)-1, chan);  /* write key */
+        lpi_write_object(L, lua_gettop(L), chan);    /* write value */
+        lua_pop(L, 1);
+    }
+
+    lpi_write_header(chan, LUA_TTABLE, LPI_TABLE_END);
+}
+
 void lpi_write_object(lua_State * L, int index, PI_CHANNEL * chan)
 {
     int n;
@@ -51,6 +68,8 @@ void lpi_write_object(lua_State * L, int index, PI_CHANNEL * chan)
 	    lua_pop(L, 2);
 	    break;
 	case LUA_TTABLE:
+            lpi_write_table(L, index, chan);
+            break;
 	default:
 	    luaL_typerror(L, index, "nil, number, boolean, or string");
 	    break;

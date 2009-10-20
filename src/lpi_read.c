@@ -18,6 +18,31 @@ char * lpi_read_data(PI_CHANNEL * chan, size_t size)
   return buf;
 }
 
+void lpi_read_object(lua_State *, PI_CHANNEL *);
+
+void lpi_read_table(lua_State * L, PI_CHANNEL * chan)
+{
+    while (1)
+    {
+        /* read key */
+        lpi_read_object(L, chan);
+        
+        /* end of table? */
+        if (lua_type(L, -1) == LUA_TNIL)
+        {
+            lua_pop(L, 1);
+            break;
+        }
+
+        /* read value */
+        lpi_read_object(L, chan);
+
+        /* set */
+        lua_settable(L, -3);
+    }
+}
+    
+
 void lpi_read_object(lua_State * L, PI_CHANNEL * chan)
 {
     int t; lua_Number n; char * buf;
@@ -48,6 +73,17 @@ void lpi_read_object(lua_State * L, PI_CHANNEL * chan)
             }
             free(buf);
             break;
+        case LUA_TTABLE:
+            if (n == LPI_TABLE_START)
+            {
+                lua_newtable(L);
+                lpi_read_table(L, chan);
+            } else if (n == LPI_TABLE_END)
+            {
+                lua_pushnil(L);
+            }
+
+            break;
         default:
             luaL_error("Unknown type on the wire: %s", lua_typename(L, t));
             break;
@@ -56,15 +92,15 @@ void lpi_read_object(lua_State * L, PI_CHANNEL * chan)
     return;
 }
 
-  int lpi_read(lua_State * L)
-  {
+int lpi_read(lua_State * L)
+{
     PI_CHANNEL * chan = *(PI_CHANNEL **)luaL_checkudata(L, 1, "PI_CHANNEL *");
     int n = luaL_optint(L, 2, 1);
 
     for (int i = 0; i < n; ++i)
     {
-      lpi_read_object(L, chan);
+        lpi_read_object(L, chan);
     }
 
     return n;
-  }
+}
