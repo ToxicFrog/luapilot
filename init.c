@@ -36,7 +36,7 @@ int lpi_configure(lua_State * L)
     {
         argv[i] = lua_tostring(L, i);
         if (!argv[i])
-	  luaL_typerror(L, i, "string");
+            luaL_typerror(L, i, "string");
     }
     
     int N = PI_Configure(&argc, &argv);
