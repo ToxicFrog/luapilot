@@ -2,6 +2,7 @@
 #include <lauxlib.h>
 #include <pilot.h>
 
+extern int luaL_openlibs(lua_State *);
 extern int luaopen_pilot(lua_State *);
 
 int main(int argc, char ** argv)

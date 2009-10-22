@@ -18,7 +18,7 @@ LIBS            = { "-llua", "-lpilot" }
 SRCDIR          = "src/"
 
 sources = {
-    cfile "init.c";
+    cfile "lpi_init.c";
     cfile "lpi_abort.c";
     cfile "lpi_channel.c";
     cfile "lpi_log.c";
@@ -32,10 +32,17 @@ sources = {
 
 objects = group(sources)
 
-lpilot = program {
-    install = pm.install "lpilot";
-    cfile "lpilot.c";
+pilotstatic = lib {
+    install = pm.install "libpilot.a";
+--    outputs = { "%U%-libpilot.a" };
+
     objects;
+}
+
+luapilot = program {
+    install = pm.install "luapilot";
+    cfile "luapilot.c";
+    pilotstatic;
 }
 
 pilotlib = sharedlib {
@@ -44,7 +51,7 @@ pilotlib = sharedlib {
     objects;
 }
 
-default = group { lpilot, pilotlib }
+default = group { luapilot, pilotlib, pilotstatic }
 
 test = simple {
      command = "mpiexec -c 4 lua test.lua";
