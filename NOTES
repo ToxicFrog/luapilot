@@ -26,9 +26,9 @@ PI_BUNDLE
                 PI_Read
                 PI_Write
                 PI_SetName
+                PI_Abort
+                PI_Log
         PI_GetName
-        PI_Abort
-        PI_Log
 PI_CopyChannels
 PI_Select
 PI_TrySelect

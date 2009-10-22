@@ -12,21 +12,23 @@
  **/
 int lpi_abort(lua_State * L)
 {
-  const char * message = luaL_checkstring(L, 1);
-  lua_Debug ar;
-  int line = 0;
-  const char * src = "<<unknown>>";
+    const char * message = luaL_checkstring(L, 1);
+    lua_Debug ar;
+    int line = 0;
+    const char * src = "<<unknown>>";
 
-  if (lua_getstack(L, 1, &ar))
-  {
-    lua_getinfo(L, "Sl", &ar);  /* get info about caller */
-    if (ar.currentline > 0)  /* is there info? */
+    /* get file and line information using the lua debug interface */
+    if (lua_getstack(L, 1, &ar))
     {
-      line = ar.currentline;
-      src = ar.short_src;
+        lua_getinfo(L, "Sl", &ar);
+        if (ar.currentline > 0)
+        {
+            /* activation record got, extract the info from it */
+            line = ar.currentline;
+            src = ar.short_src;
+        }
     }
-  }
 
-  PI_Abort(0, message, src, line);
-  return 0;
+    PI_Abort(0, message, src, line);
+    return 0;
 }

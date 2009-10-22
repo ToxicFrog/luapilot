@@ -5,12 +5,7 @@
 
 int lpi_log(lua_State * L)
 {
-    lua_getglobal(L, "string");
-    lua_getfield(L, -1, "format");
-    lua_insert(L, 1);
-    lua_pop(L, 1);
-    lua_call(L, lua_gettop(L)-1, 1);
-    PI_Log(lua_tostring(L, 1));
+    PI_Log(luaL_checkstring(L, 1));
     return 1;
 }
 
