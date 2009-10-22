@@ -1,5 +1,7 @@
 *.o
 *~
 lpilot
-pilot.so
+luapilot.so
 .pm*
+luapilot
+libluapilot.a

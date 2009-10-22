@@ -1,4 +1,4 @@
-require "pilot"
+require "luapilot"
 
 if not pilot.worldsize then
 	pilot.configure()

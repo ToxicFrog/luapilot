@@ -33,8 +33,7 @@ sources = {
 objects = group(sources)
 
 pilotstatic = lib {
-    install = pm.install "libpilot.a";
---    outputs = { "%U%-libpilot.a" };
+    install = pm.install "libluapilot.a";
 
     objects;
 }
@@ -46,7 +45,7 @@ luapilot = program {
 }
 
 pilotlib = sharedlib {
-    install = pm.install "pilot.so";
+    install = pm.install "luapilot.so";
 
     objects;
 }

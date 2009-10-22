@@ -118,3 +118,7 @@ int luaopen_pilot(lua_State * L)
     return 1;
 }                                                                 
 
+int luaopen_luapilot(lua_State * L)
+{
+    return luaopen_pilot(L);
+}
