@@ -7,17 +7,17 @@ end
 function hello(self, n)
 	print(pilot.getName(), n)
 
-        local msg = pilot.read(self.chan)
-        while msg ~= nil do
+        for msg in function() return self.chan:read() end do
               print(pilot.getName(), msg)
+
               if type(msg) == "function" then
                  print("", msg())
+
               elseif type(msg) == "table" then
                  for k,v in pairs(msg) do
                      print("", k, v)
                  end
               end
-              msg = pilot.read(self.chan)
         end
 
         return 0
@@ -47,7 +47,7 @@ print(pilot.main, "main")
 
 for _,message in ipairs(messages) do
     for k,v in pairs(procs) do
-        pilot.write(v.chan, message)
+        v.chan:write(message)
     end
 end
 

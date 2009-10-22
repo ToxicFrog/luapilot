@@ -2,36 +2,34 @@ unimpl	beta	done
 
 	Constants
 	---------
-		PI_MAIN
+                PI_MAIN
 
 
 	Types
 	-----
-	PI_PROCESS
-	PI_CHANNEL
+                PI_PROCESS
+        PI_CHANNEL
 PI_BUNDLE
 
 
 	Functions
 	---------
-		PI_StartTime
-		PI_EndTime
-		PI_IsLogging
-		PI_Configure
-		PI_CreateProcess
-		PI_StartAll
-		PI_StopMain
-		PI_SetName
-		PI_GetName
-		PI_Abort
-		PI_ChannelHasData
-		PI_CreateChannel
-	PI_Log
-
+                PI_StartTime
+                PI_EndTime
+                PI_IsLogging
+                PI_Configure
+                PI_CreateProcess
+                PI_StartAll
+                PI_StopMain
+                PI_ChannelHasData
+                PI_CreateChannel
+                PI_Read
+                PI_Write
+                PI_SetName
+        PI_GetName
+        PI_Abort
+        PI_Log
 PI_CopyChannels
-PI_Read
-PI_Write
-
 PI_Select
 PI_TrySelect
 PI_CreateBundle

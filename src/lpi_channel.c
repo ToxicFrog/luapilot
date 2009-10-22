@@ -3,6 +3,9 @@
 #include <pilot.h>
 
 #include "lpi_process.h"
+#include "lpi_read.h"
+#include "lpi_write.h"
+#include "lpi_names.h"
 
 static void lpi_channel_push(lua_State * L, PI_CHANNEL * channel)
 {
@@ -51,11 +54,21 @@ luaL_Reg lpi_channel_mt[] = {
   { NULL, NULL }
 };
 
+luaL_Reg lpi_channel_methods[] = {
+    { "hasData", lpi_channelHasData },
+    { "read", lpi_read },
+    { "write", lpi_write },
+    { "setName", lpi_setName },
+    { "getName", lpi_getName },
+    { NULL, NULL }
+};
+
 void lpi_channel_init(lua_State * L)
 {
   luaL_newmetatable(L, "PI_CHANNEL *");
   luaL_register(L, NULL, lpi_channel_mt);
-  lua_getglobal(L, "pilot");
+  lua_newtable(L);
+  luaL_register(L, NULL, lpi_channel_methods);
   lua_setfield(L, -2, "__index");
   lua_pop(L, 1);
   return;
