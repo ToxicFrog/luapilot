@@ -54,24 +54,29 @@ luaL_Reg lpi_process_mt[] = {
 static int lpi_processThunk(int n, void * L)
 {
     lua_settop(L, 0);
-    lua_rawgeti(L, LUA_REGISTRYINDEX, n);   /* self */
-
-    lpi_Process * P = luaL_checkudata(L, 1, "PI_PROCESS *");
+    lua_getglobal(L, "debug");
+    lua_getfield(L, 1, "traceback");
+    lua_remove(L, 1);
     
-    lua_rawgeti(L, LUA_REGISTRYINDEX, P->fn);  /* self fn */
-    lua_insert(L, 1);                          /* fn self */
+    lua_rawgeti(L, LUA_REGISTRYINDEX, n);   /* dtb self */
 
-    lua_rawgeti(L, LUA_REGISTRYINDEX, P->env); /* fn self env  */
+    lpi_Process * P = luaL_checkudata(L, 2, "PI_PROCESS *");
+    
+    lua_rawgeti(L, LUA_REGISTRYINDEX, P->fn);  /* dtb self fn */
+    lua_insert(L, -2);                          /* dtb fn self */
 
-    int nargs = lua_objlen(L, 3)+1;
+    lua_rawgeti(L, LUA_REGISTRYINDEX, P->env); /* dtb fn self env  */
 
-    l_unpack(L, 3);                        /* fn self env ... */
-    lua_remove(L, 3);                      /* fn self ... */
+    int nargs = lua_objlen(L, 4)+1;
+
+    l_unpack(L, 4);                        /* dtb fn self env ... */
+    lua_remove(L, 4);                      /* dtb fn self ... */
     
     int rv;
-    if ((rv = lua_pcall(L, nargs, 1, 0)) != 0)
+    if ((rv = lua_pcall(L, nargs, 1, 1)) != 0)
     {
-        fprintf(stderr, "error raised by Lua code during process execution: %s\n", lua_tostring(L, -1));
+        //        fprintf(stderr, "In process %s: %s\n", PI_GetName(NULL), lua_tostring(L, -1));
+        PI_Abort(0, lua_tostring(L, -1), __FILE__, __LINE__);
         return rv;
     }
     
