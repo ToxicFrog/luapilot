@@ -32,7 +32,11 @@ int lpi_setName(lua_State * L)
  **/
 int lpi_getName(lua_State * L)
 {
-  void * obj = lpi_pipointer(L, 1);
-  lua_pushstring(L, PI_GetName(obj));
-  return 1;
+    if (lua_topointer(L, 1) == NULL)
+        lua_pushstring(L, PI_GetName(NULL));
+    else {
+        void * obj = lpi_pipointer(L, 1);
+        lua_pushstring(L, PI_GetName(obj));
+    }
+    return 1;
 }
