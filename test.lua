@@ -19,16 +19,25 @@ function hello(self, n)
                  end
               end
         end
-
+        print(pilot.getName(), 'Exiting')
+        self.reply:send(n)
         return 0
 end
 
 local procs = {}
+local chans = {}
+local rchans = {}
+
 for i=2,pilot.worldsize do
 	procs[i] = pilot.process(hello, i, "hello")
 	pilot.setName(procs[i], "P-Hello-"..i)
 	procs[i].chan = pilot.channel(pilot.main, procs[i])
+        table.insert(chans, procs[i].chan)
+        procs[i].reply = pilot.channel(procs[i], pilot.main)
+        table.insert(rchans, procs[i].reply)
 end
+
+local bundle = pilot.bundle("select", rchans)
 
 local messages = {
     1, 2, 3;
@@ -40,10 +49,15 @@ local messages = {
         function(s) return s:upper() end });
 }
 
+
 pilot.startAll()
 pilot.startTime()
 
 print(pilot.main, "main")
+
+for i=1,pilot.worldsize-1 do
+    print(pilot.worldsize, i, bundle[i], #chans, #rchans)
+end
 
 for _,message in ipairs(messages) do
     for k,v in pairs(procs) do
@@ -53,6 +67,11 @@ end
 
 for _,proc in pairs(procs) do
     pilot.write(proc.chan, nil)
+end
+
+for i=2,pilot.worldsize do
+    local c,n = bundle:select()
+    print(n, c, c:read())
 end
 
 print(pilot.endTime())

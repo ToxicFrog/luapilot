@@ -132,6 +132,8 @@ luaL_Reg lpi_channel_methods[] = {
     { "hasData", lpi_channelHasData },
     { "read", lpi_read },
     { "write", lpi_write },
+    { "send", lpi_write },
+    { "receive", lpi_read },
     { "setName", lpi_setName },
     { "getName", lpi_getName },
     { NULL, NULL }

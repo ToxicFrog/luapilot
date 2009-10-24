@@ -7,9 +7,9 @@ unimpl	beta	done
 
 	Types
 	-----
-                PI_PROCESS
-        PI_CHANNEL
-PI_BUNDLE
+        PI_PROCESS
+                PI_CHANNEL
+        PI_BUNDLE
 
 
 	Functions
@@ -28,13 +28,13 @@ PI_BUNDLE
                 PI_SetName
                 PI_Abort
                 PI_Log
-        PI_GetName
-PI_CopyChannels
-PI_Select
-PI_TrySelect
+                PI_GetName
+                PI_CopyChannels
+        PI_Select
+        PI_TrySelect
 PI_CreateBundle
-PI_GetBundleChannel
-PI_GetBundleSize
+        PI_GetBundleChannel
+        PI_GetBundleSize
 PI_Broadcast
 PI_Gather
 
