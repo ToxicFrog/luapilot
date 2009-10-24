@@ -29,12 +29,18 @@ local chans = {}
 local rchans = {}
 
 for i=2,pilot.worldsize do
-	procs[i] = pilot.process(hello, i, "hello")
-	pilot.setName(procs[i], "P-Hello-"..i)
-	procs[i].chan = pilot.channel(pilot.main, procs[i])
-        table.insert(chans, procs[i].chan)
-        procs[i].reply = pilot.channel(procs[i], pilot.main)
-        table.insert(rchans, procs[i].reply)
+        local p = pilot.process(hello, i, "hello")
+        for k,v in pairs(getmetatable(p)) do
+        print(k,v)
+        end
+        print("new process", p)
+        p:setName("P-Hello-"..i)
+        p.chan = pilot.channel(pilot.main, p)
+        p.reply = pilot.channel(p, pilot.main)
+
+        table.insert(chans, p.chan)
+        table.insert(rchans, p.reply)
+        procs[i] = p
 end
 
 local bundle = pilot.bundle("select", rchans)

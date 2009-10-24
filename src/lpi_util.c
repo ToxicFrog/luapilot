@@ -25,15 +25,14 @@ void * lpi_pipointer(lua_State * L, int index)
 {
     void * obj = NULL;
 
-    if (!lua_touserdata(L, index))
+    if (!lua_touserdata(L, index)
+        || !(l_checkutype(L, index, "PI_PROCESS *")
+             || l_checkutype(L, index, "PI_CHANNEL *")
+             || l_checkutype(L, index, "PI_BUNDLE *")))
     {
         luaL_error(L, "luapilot: object at stack index %d is not a PI_OBJECT* but rather a %s", index, luaL_typename(L, index));
         return NULL;
     }
-    if (l_checkutype(L, index, "PI_PROCESS *"))
-        obj = ((lpi_Process *)lua_touserdata(L, index))->proc;
-    else if (l_checkutype(L, index, "PI_CHANNEL *") || l_checkutype(L, index, "PI_BUNDLE *"))
-        obj = *((void **)lua_touserdata(L, index));
 
-    return obj;
+    return *((void **)lua_touserdata(L, index));
 }

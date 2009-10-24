@@ -4,6 +4,7 @@
 
 #include "lpi_util.h"
 #include "lpi_process.h"
+#include "lpi_names.h"
 
 static int lpi_process_tostring(lua_State * L)
 {
@@ -21,23 +22,22 @@ static int lpi_process_type(lua_State * L)
 
 static int lpi_process_newindex(lua_State * L)
 {
-  lpi_Process * P = luaL_checkudata(L, 1, "PI_PROCESS *");
+  luaL_checkudata(L, 1, "PI_PROCESS *");
   luaL_checkany(L, 2);
   luaL_checkany(L, 3);
 
-  lua_rawgeti(L, LUA_REGISTRYINDEX, P->env);
-  lua_insert(L, 2);
-  lua_settable(L, 2);
-
+  lua_getfenv(L, 1);
+  lua_insert(L, -3);
+  lua_settable(L, -3);
   return 0;
 }
 
 static int lpi_process_index(lua_State * L)
 {
-  lpi_Process * P = luaL_checkudata(L, 1, "PI_PROCESS *");
+  luaL_checkudata(L, 1, "PI_PROCESS *");
   luaL_checkany(L, 2);
 
-  lua_rawgeti(L, LUA_REGISTRYINDEX, P->env);
+  lua_getfenv(L, 1);
   lua_insert(L, -2);
   lua_gettable(L, -2);
   return 1;
@@ -51,6 +51,12 @@ luaL_Reg lpi_process_mt[] = {
   { NULL, NULL }
 };
 
+luaL_Reg lpi_process_methods[] = {
+    { "setName",     lpi_setName },
+    { "getName",     lpi_getName },
+    { NULL, NULL }
+};
+
 static int lpi_processThunk(int n, void * L)
 {
     lua_settop(L, 0);
@@ -59,14 +65,12 @@ static int lpi_processThunk(int n, void * L)
     lua_remove(L, 1);
     
     lua_rawgeti(L, LUA_REGISTRYINDEX, n);   /* dtb self */
+    luaL_checkudata(L, 2, "PI_PROCESS *");
 
-    lpi_Process * P = luaL_checkudata(L, 2, "PI_PROCESS *");
+    lua_getfenv(L, 2);                      /* dtb self env */
+    lua_getfield(L, 3, "__process");        /* dtb self env fn */
+    lua_insert(L, 2);                       /* dtb fn self env */
     
-    lua_rawgeti(L, LUA_REGISTRYINDEX, P->fn);  /* dtb self fn */
-    lua_insert(L, -2);                          /* dtb fn self */
-
-    lua_rawgeti(L, LUA_REGISTRYINDEX, P->env); /* dtb fn self env  */
-
     int nargs = lua_objlen(L, 4)+1;
 
     l_unpack(L, 4);                        /* dtb fn self env ... */
@@ -75,7 +79,6 @@ static int lpi_processThunk(int n, void * L)
     int rv;
     if ((rv = lua_pcall(L, nargs, 1, 1)) != 0)
     {
-        //        fprintf(stderr, "In process %s: %s\n", PI_GetName(NULL), lua_tostring(L, -1));
         PI_Abort(0, lua_tostring(L, -1), __FILE__, __LINE__);
         return rv;
     }
@@ -93,6 +96,14 @@ lpi_Process * lpi_process_new(lua_State * L)
   return P;
 }
 
+PI_PROCESS ** lpi_process_push(lua_State * L)
+{
+    PI_PROCESS ** obj = lua_newuserdata(L, sizeof(PI_PROCESS *));
+    luaL_newmetatable(L, "PI_PROCESS *");
+    lua_setmetatable(L, -2);
+    return obj;
+}
+
 int lpi_process(lua_State * L)
 {
     /* verify first argument */
@@ -108,27 +119,31 @@ int lpi_process(lua_State * L)
     }
     
     /* create the PI_PROCESS wrapper */
-    lpi_Process * P = lpi_process_new(L);
-    lua_insert(L, 1);
+    PI_PROCESS ** obj = lpi_process_push(L); /* fn env ud */
+    lua_insert(L, 1); /* ud fn env */
+    luaL_register(L, NULL, lpi_process_methods);
+    lua_insert(L, 2); /* ud env fn */
 
-    /* store the environment and process function in it */
-    P->env = luaL_ref(L, LUA_REGISTRYINDEX);
-    P->fn = luaL_ref(L, LUA_REGISTRYINDEX);
+    /* store the process function in it */
+    lua_setfield(L, -2, "__process");
+
+    /* assign the environment table */
+    lua_setfenv(L, 1);
 
     /* store the wrapper itself in the registry so that the thunk can get it later */
     lua_pushvalue(L, 1);
-    int n = luaL_ref(L, LUA_REGISTRYINDEX);
+    int ref = luaL_ref(L, LUA_REGISTRYINDEX);
 
-    /* create the PI_PROCESS */
-    P->proc = PI_CreateProcess(lpi_processThunk, n, L);
+    /* create the process */
+    *obj = PI_CreateProcess(lpi_processThunk, ref, L);
 
     return 1;
 }
 
 void lpi_process_init(lua_State * L)
 {
-  luaL_newmetatable(L, "PI_PROCESS *");
-  luaL_register(L, NULL, lpi_process_mt);
-  lua_pop(L, 1);
-  return;
+    luaL_newmetatable(L, "PI_PROCESS *");
+    luaL_register(L, NULL, lpi_process_mt);
+    lua_pop(L, 1);
+    return;
 }

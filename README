@@ -107,12 +107,14 @@ Returns the elapsed time since the last call to startTime, in seconds.
 
 
     pilot.setName(object, name)
+    object:setName(name)
 
 Sets the "friendly name" of a Pilot object (PI_PROCESS, PI_CHANNEL, or
 PI_BUNDLE). If name is omitted, sets it to ''.
 
 
     pilot.getName(object)
+    object:getName()
 
 Returns the "friendly name" of a Pilot object. If no object is specified,
 returns the name of the current process.
@@ -139,18 +141,25 @@ from A to B,C,D would result in copies from B,C,D to A.
 
 
     pilot.write(channel, ...)
+    pilot.send(channel, ...)
+    channel:write(...)
+    channel:send(...)
 
 Write one or more objects to a channel. At present strings, numbers, booleans,
 and nil are permitted.
 
 
     pilot.read(channel, n)
+    pilot.receive(channel, n)
+    channel:read(n)
+    channel:receive(n)
 
 Read n objects from a channel and return them all. n, if omitted, defaults to
 1. If there are not enough objects in the channel, blocks until there are.
 
 
     pilot.channelHasData(channel)
+    channel:hasData()
 
 Returns true if the channel contains at least one object to read (ie, if
 read(channel) would not block), and false otherwise.
@@ -178,6 +187,7 @@ bundles, like tables, are 1-indexed.
 
 
     pilot.select(bundle)
+    bundle:select()
 
 Blocks until a channel in the bundle is available for reading (that is to say,
 calling read(1) on it would not block). Returns two values: the channel, and
@@ -185,6 +195,7 @@ its index in the bundle.
 
 
     pilot.trySelect(bundle)
+    bundle:trySelect()
 
 A nonblocking version of select. If a channel in the bundle is available for
 read, behaves as select. Otherwise returns nil.
