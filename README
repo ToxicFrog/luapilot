@@ -86,9 +86,9 @@ Suspend main until all other processes have returned, then shut down
 Pilot. Returns n (a number) to MPI as the process completion code.
 
 
-    pilot.log(fmt, ...)
+    pilot.log(message)
 
-I wouldn't use this just yet.
+Ask Pilot to log the given message.
 
 
     pilot.isLogging()
@@ -128,6 +128,14 @@ Abort the application, reporting message as the reason.
 Create a communication channel between 'from' and 'to, which must be
 PI_PROCESSes. Returns a new PI_CHANNEL which 'from' can call write on and 'to'
 can call read on.
+
+
+    pilot.copyChannels(channels, [reverse])
+
+Copy a list of channels. Returns a list of newly created channels between the
+same two endpoints, at the same indexes. If _reverse_ is logical true, the
+channels will be created with the endpoints reversed; eg, a list of channels
+from A to B,C,D would result in copies from B,C,D to A.
 
 
     pilot.write(channel, ...)

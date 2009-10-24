@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <lua.h>
 #include <lauxlib.h>
 #include <pilot.h>
@@ -32,6 +33,38 @@ int lpi_channel(lua_State * L)
     return 1;
 }
 
+
+/**
+ * pilot.copyChannels
+ **/
+int lpi_copyChannels(lua_State * L)
+{
+    luaL_checktype(L, 1, LUA_TTABLE);
+    int reverse = lua_toboolean(L, 2);
+
+    int size = lua_objlen(L, 1);
+    PI_CHANNEL ** channels = malloc(size * sizeof(PI_CHANNEL *));
+    
+    for (int i = 0; i < size; ++i)
+    {
+        lua_rawgeti(L, 1, i+1);
+        channels[i] = *(PI_CHANNEL **)luaL_checkudata(L, -1, "PI_CHANNEL *");
+        lua_pop(L, 1);
+    }
+
+    PI_CHANNEL ** copies = PI_CopyChannels(reverse? PI_REVERSE:PI_SAME, channels, size);
+
+    lua_newtable(L);
+    for (int i = 1; i <= size; ++i)
+    {
+        lpi_channel_push(L, copies[i-1]);
+        lua_rawseti(L, -2, i);
+    }
+
+    free(copies);
+    free(channels);
+    return 1;
+}
 
 /******************************************************************************
  * Methods

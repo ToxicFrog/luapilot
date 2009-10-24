@@ -88,6 +88,7 @@ const luaL_Reg lr_pilot[] = {
     { "setName",        lpi_setName     },
     { "getName",        lpi_getName     },
     { "abort",          lpi_abort,      },
+    { "copyChannels",   lpi_copyChannels },
     { "channel",        lpi_channel,    },
     { "channelHasData", lpi_channelHasData },
     { "read",           lpi_read        },
