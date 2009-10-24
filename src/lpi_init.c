@@ -16,6 +16,7 @@
 #include "lpi_abort.h"
 #include "lpi_write.h"
 #include "lpi_read.h"
+#include "lpi_bundle.h"
 
 /**
  * lpi_configure: PI_Configure
@@ -93,6 +94,11 @@ const luaL_Reg lr_pilot[] = {
     { "channelHasData", lpi_channelHasData },
     { "read",           lpi_read        },
     { "write",          lpi_write       },
+    { "bundle",         lpi_bundle      },
+    { "select",         lpi_select      },
+    { "trySelect",      lpi_trySelect   },
+    { "getBundleSize",  lpi_getBundleSize },
+    { "getBundleChannel", lpi_getBundleChannel },
     { NULL,             NULL            }
 };
 
@@ -109,6 +115,7 @@ int luaopen_pilot(lua_State * L)
     luaL_register(L, "pilot", lr_pilot);
     lpi_process_init(L);
     lpi_channel_init(L);
+    lpi_bundle_init(L);
     
     lpi_Process * Pmain = lpi_process_new(L);
     lua_newtable(L);

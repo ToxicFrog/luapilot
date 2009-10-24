@@ -156,3 +156,35 @@ Returns true if the channel contains at least one object to read (ie, if
 read(channel) would not block), and false otherwise.
 
 
+    pilot.bundle(type, channels)
+
+Create a bundle, a collection of related channel endpoints. _type_ is the
+string "select", "gather", or "broadcast". Note that although the creation of
+all three bundle types is supported, at present the actual broadcast and
+gather calls are not. Returns a new bundle object.
+
+    
+    pilot.getBundleSize(bundle)
+
+Returns the number of channels in the bundle.
+
+
+    pilot.getBundleChannel(bundle, index)
+    bundle[index]
+
+Returns the channel at index n in the bundle. This is the same index the
+channel had in the original list used to create the bundle. Note that in Lua,
+bundles, like tables, are 1-indexed.
+
+
+    pilot.select(bundle)
+
+Blocks until a channel in the bundle is available for reading (that is to say,
+calling read(1) on it would not block). Returns two values: the channel, and
+its index in the bundle.
+
+
+    pilot.trySelect(bundle)
+
+A nonblocking version of select. If a channel in the bundle is available for
+read, behaves as select. Otherwise returns nil.

@@ -28,6 +28,7 @@ sources = {
     cfile "lpi_time.c";
     cfile "lpi_util.c";
     cfile "lpi_write.c";
+    cfile "lpi_bundle.c";
 }       
 
 objects = group(sources)
