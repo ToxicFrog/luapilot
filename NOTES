@@ -7,7 +7,7 @@ unimpl	beta	done
 
 	Types
 	-----
-        PI_PROCESS
+                PI_PROCESS
                 PI_CHANNEL
         PI_BUNDLE
 
@@ -35,7 +35,7 @@ unimpl	beta	done
                 PI_CreateBundle
                 PI_GetBundleChannel
                 PI_GetBundleSize
-PI_Broadcast
+        PI_Broadcast
 PI_Gather
 
 
