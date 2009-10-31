@@ -116,12 +116,10 @@ int luaopen_pilot(lua_State * L)
     lpi_process_init(L);
     lpi_channel_init(L);
     lpi_bundle_init(L);
-    
-    lpi_Process * Pmain = lpi_process_new(L);
-    lua_newtable(L);
-    Pmain->env = luaL_ref(L, LUA_REGISTRYINDEX);
-    Pmain->proc = PI_MAIN;
-    lua_setfield(L, -2, "main");
+
+    PI_PROCESS ** Pmain = lpi_process_push(L);
+    lua_setfield(L, -2, "main");*Pmain = PI_MAIN;
+    *Pmain = PI_MAIN;
 
     return 1;
 }                                                                 

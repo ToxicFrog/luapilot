@@ -87,15 +87,6 @@ static int lpi_processThunk(int n, void * L)
     return rv;
 }
 
-lpi_Process * lpi_process_new(lua_State * L)
-{
-  lpi_Process * P = lua_newuserdata(L, sizeof(lpi_Process));
-  luaL_newmetatable(L, "PI_PROCESS *");
-  lua_setmetatable(L, -2);
-
-  return P;
-}
-
 PI_PROCESS ** lpi_process_push(lua_State * L)
 {
     PI_PROCESS ** obj = lua_newuserdata(L, sizeof(PI_PROCESS *));

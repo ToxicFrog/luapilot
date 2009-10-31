@@ -25,10 +25,10 @@ static void lpi_channel_push(lua_State * L, PI_CHANNEL * channel)
  **/
 int lpi_channel(lua_State * L)
 {
-    lpi_Process * from = luaL_checkudata(L, 1, "PI_PROCESS *");
-    lpi_Process * to = luaL_checkudata(L, 2, "PI_PROCESS *");
+    PI_PROCESS * from = *(PI_PROCESS **)luaL_checkudata(L, 1, "PI_PROCESS *");
+    PI_PROCESS * to = *(PI_PROCESS **)luaL_checkudata(L, 2, "PI_PROCESS *");
 
-    PI_CHANNEL * channel = PI_CreateChannel(from->proc, to->proc);
+    PI_CHANNEL * channel = PI_CreateChannel(from, to);
     lpi_channel_push(L, channel);
     return 1;
 }
