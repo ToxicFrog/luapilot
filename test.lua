@@ -80,5 +80,8 @@ for i=2,pilot.worldsize do
     print(n, c, c:read())
 end
 
+print(pilot.broadcast)
+print(bundle.broadcast)
+
 print(pilot.endTime())
 pilot.stopMain(0)

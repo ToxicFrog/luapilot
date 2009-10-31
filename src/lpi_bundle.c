@@ -4,7 +4,9 @@
 #include <lauxlib.h>
 #include <pilot.h>
 
+#include "lpi_broadcast.h"
 #include "lpi_error.h"
+
 static void lpi_bundle_push(lua_State * L, PI_BUNDLE * bundle)
 {
   PI_BUNDLE ** obj = lua_newuserdata(L, sizeof(PI_BUNDLE *));
@@ -56,18 +58,6 @@ int lpi_bundle(lua_State * L)
 }
 
 /**
- * Methods
- **/
-
-/**
- * Broadcast
- **/
-
-/**
- * Gather
- **/
-
-/**
  * select
  **/
 int lpi_select(lua_State * L)
@@ -117,7 +107,6 @@ int lpi_getBundleChannel(lua_State * L)
     
     return 1;
 }
-
 
 /**
 * getSize
@@ -175,6 +164,7 @@ luaL_Reg lpi_bundle_methods[] = {
     { "getChannel",  lpi_getBundleChannel },
     { "select",      lpi_select },
     { "trySelect",   lpi_trySelect },
+    { "broadcast",   lpi_broadcast },
     { NULL, NULL }
 };
 

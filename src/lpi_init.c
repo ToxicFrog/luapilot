@@ -18,6 +18,7 @@
 #include "lpi_write.h"
 #include "lpi_read.h"
 #include "lpi_bundle.h"
+#include "lpi_broadcast.h"
 
 /**
  * lpi_configure: PI_Configure
@@ -100,6 +101,7 @@ const luaL_Reg lr_pilot[] = {
     { "trySelect",      lpi_trySelect   },
     { "getBundleSize",  lpi_getBundleSize },
     { "getBundleChannel", lpi_getBundleChannel },
+    { "broadcast",      lpi_broadcast },
     { NULL,             NULL            }
 };
 
