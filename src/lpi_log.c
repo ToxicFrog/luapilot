@@ -3,15 +3,18 @@
 #include <lauxlib.h>
 #include <pilot.h>
 
+#include "lpi_error.h"
+
 int lpi_log(lua_State * L)
 {
-    PI_Log(luaL_checkstring(L, 1));
+    LPI_CALL(L, PI_Log, luaL_checkstring(L, 1));
     return 1;
 }
 
 int lpi_isLogging(lua_State * L)
 {
-    lua_pushboolean(L, PI_IsLogging());
+    int il = LPI_CALL(L, PI_IsLogging);
+    lua_pushboolean(L, il);
     return 1;
 }
 

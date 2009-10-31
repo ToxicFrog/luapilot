@@ -4,6 +4,7 @@
 #include <lauxlib.h>
 #include <pilot.h>
 
+#include "lpi_error.h"
 static void lpi_bundle_push(lua_State * L, PI_BUNDLE * bundle)
 {
   PI_BUNDLE ** obj = lua_newuserdata(L, sizeof(PI_BUNDLE *));
@@ -39,7 +40,7 @@ int lpi_bundle(lua_State * L)
     }
 
 
-    PI_BUNDLE * bundle = PI_CreateBundle(type, channels, size);
+    PI_BUNDLE * bundle = LPI_CALL(L, PI_CreateBundle, type, channels, size);
     lpi_bundle_push(L, bundle);
 
     lua_newtable(L);
@@ -73,7 +74,9 @@ int lpi_select(lua_State * L)
 {
     PI_BUNDLE * obj = *(PI_BUNDLE **)luaL_checkudata(L, 1, "PI_BUNDLE *");
     lua_settop(L, 1);
-    lua_pushinteger(L, PI_Select(obj)+1);
+
+    int n = LPI_CALL(L, PI_Select, obj);
+    lua_pushinteger(L, n+1);
     lpi_getBundleChannel(L);
     lua_pushvalue(L, 2);
     return 2;
@@ -86,7 +89,9 @@ int lpi_trySelect(lua_State * L)
 {
     PI_BUNDLE * obj = *(PI_BUNDLE **)luaL_checkudata(L, 1, "PI_BUNDLE *");
     lua_settop(L, 1);
-    lua_pushinteger(L, PI_TrySelect(obj)+1);
+
+    int n = LPI_CALL(L, PI_TrySelect, obj);
+    lua_pushinteger(L, n+1);
     lpi_getBundleChannel(L);
     lua_pushvalue(L, 2);
     return 2;
@@ -99,7 +104,7 @@ int lpi_getBundleChannel(lua_State * L)
 {
     PI_BUNDLE * obj = *(PI_BUNDLE **)luaL_checkudata(L, 1, "PI_BUNDLE *");
     int n = luaL_checkinteger(L, 2);
-    PI_CHANNEL * chan = PI_GetBundleChannel(obj, n-1);
+    PI_CHANNEL * chan = LPI_CALL(L, PI_GetBundleChannel, obj, n-1);
 
     if (!chan) /* invalid index. It's not fatal in Pilot, so return nil */
     {
@@ -120,7 +125,9 @@ int lpi_getBundleChannel(lua_State * L)
 int lpi_getBundleSize(lua_State * L)
 {
     PI_BUNDLE * obj = *(PI_BUNDLE **)luaL_checkudata(L, 1, "PI_BUNDLE *");
-    lua_pushinteger(L, PI_GetBundleSize(obj));
+
+    int n = LPI_CALL(L, PI_GetBundleSize, obj);
+    lua_pushinteger(L, n);
     return 1;
 }
 

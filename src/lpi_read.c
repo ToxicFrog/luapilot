@@ -5,19 +5,21 @@
 #include <pilot.h>
 
 #include "lpi_comms.h"
+#include "lpi_error.h"
 
-void lpi_read_header(PI_CHANNEL * chan, int * t, lua_Number * n)
+void lpi_read_header(lua_State * L, PI_CHANNEL * chan, int * t, lua_Number * n)
 {
-  PI_Read(chan, LPI_HEADER_FORMAT, t, n);
+    LPI_CALL(L, PI_Read, chan, LPI_HEADER_FORMAT, t, n);
 }
 
-char * lpi_read_data(PI_CHANNEL * chan, size_t size)
+char * lpi_read_data(lua_State * L, PI_CHANNEL * chan, size_t size)
 {
-  char * buf = malloc(size);
-  PI_Read(chan, "%*c", size, buf);
-  return buf;
+    char * buf = malloc(size);
+    LPI_CALL(L, PI_Read, chan, "%*c", size, buf);
+    return buf;
 }
 
+/* forward declaration so read_table doesn't explode */
 void lpi_read_object(lua_State *, PI_CHANNEL *);
 
 void lpi_read_table(lua_State * L, PI_CHANNEL * chan)
@@ -47,7 +49,7 @@ void lpi_read_object(lua_State * L, PI_CHANNEL * chan)
 {
     int t; lua_Number n; char * buf;
 
-    lpi_read_header(chan, &t, &n);
+    lpi_read_header(L, chan, &t, &n);
 
     switch(t)
     {
@@ -61,12 +63,12 @@ void lpi_read_object(lua_State * L, PI_CHANNEL * chan)
             lua_pushnumber(L, n);
             break;
         case LUA_TSTRING:
-            buf = lpi_read_data(chan, (size_t)n);
+            buf = lpi_read_data(L, chan, (size_t)n);
             lua_pushlstring(L, buf, (size_t)n);
             free(buf);
             break;
         case LUA_TFUNCTION:
-            buf = lpi_read_data(chan, (size_t)n);
+            buf = lpi_read_data(L, chan, (size_t)n);
             if(luaL_loadbuffer(L, buf, (size_t)n, "<function from PI_Read>"))
             {
                 luaL_error(L, "error loading transmitted function: %s", lua_tostring(L, -1));

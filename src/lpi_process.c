@@ -5,6 +5,7 @@
 #include "lpi_util.h"
 #include "lpi_process.h"
 #include "lpi_names.h"
+#include "lpi_error.h"
 
 static int lpi_process_tostring(lua_State * L)
 {
@@ -126,7 +127,7 @@ int lpi_process(lua_State * L)
     int ref = luaL_ref(L, LUA_REGISTRYINDEX);
 
     /* create the process */
-    *obj = PI_CreateProcess(lpi_processThunk, ref, L);
+    *obj = LPI_CALL(L, PI_CreateProcess, lpi_processThunk, ref, L);
 
     return 1;
 }

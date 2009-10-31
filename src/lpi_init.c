@@ -7,6 +7,7 @@
 #include <lauxlib.h>
 #include <pilot.h>
 
+#include "lpi_error.h"
 #include "lpi_util.h"
 #include "lpi_process.h"
 #include "lpi_channel.h"
@@ -40,7 +41,7 @@ int lpi_configure(lua_State * L)
             luaL_typerror(L, i, "string");
     }
     
-    int N = PI_Configure(&argc, &argv);
+    int N = LPI_CALL(L, PI_Configure, &argc, &argv);
     lua_getglobal(L, "pilot");
     lua_pushinteger(L, N);
     lua_setfield(L, -2, "worldsize");
@@ -59,7 +60,7 @@ int lpi_configure(lua_State * L)
  **/
 int lpi_startAll(lua_State * L)
 {
-    PI_StartAll();
+    LPI_CALL(L, PI_StartAll);
     return 0;
 }
 
@@ -73,7 +74,7 @@ int lpi_startAll(lua_State * L)
 int lpi_stopMain(lua_State * L)
 {
     int n = luaL_checkinteger(L, 1);
-    PI_StopMain(n);
+    LPI_CALL(L, PI_StopMain, n);
     return 0;
 }
 
@@ -112,6 +113,9 @@ const luaL_Reg lr_pilot[] = {
  **/
 int luaopen_pilot(lua_State * L)
 {
+    /* tell Pilot to return and set PI_Errno on error, rather than aborting */
+    PI_OnErrorReturn = 1;
+
     luaL_register(L, "pilot", lr_pilot);
     lpi_process_init(L);
     lpi_channel_init(L);

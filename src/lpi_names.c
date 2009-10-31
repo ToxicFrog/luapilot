@@ -2,6 +2,7 @@
 #include <lauxlib.h>
 #include <pilot.h>
 
+#include "lpi_error.h"
 #include "lpi_util.h"
 
 /**
@@ -18,7 +19,7 @@ int lpi_setName(lua_State * L)
 
   const char * name = luaL_optstring(L, 2, NULL);
 
-  PI_SetName(obj, name);
+  LPI_CALL(L, PI_SetName, obj, name);
 
   return 0;
 }
@@ -32,11 +33,14 @@ int lpi_setName(lua_State * L)
  **/
 int lpi_getName(lua_State * L)
 {
+    void * obj;
     if (lua_topointer(L, 1) == NULL)
-        lua_pushstring(L, PI_GetName(NULL));
-    else {
-        void * obj = lpi_pipointer(L, 1);
-        lua_pushstring(L, PI_GetName(obj));
-    }
+        obj = NULL;
+    else
+        obj = lpi_pipointer(L, 1);
+
+    char * name = LPI_CALL(L, PI_GetName, obj);
+    lua_pushstring(L, name);
+
     return 1;
 }
