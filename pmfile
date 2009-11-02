@@ -30,6 +30,7 @@ sources = {
     cfile "lpi_write.c";
     cfile "lpi_bundle.c";
     cfile "lpi_broadcast.c";
+    cfile "lpi_gather.c";
     cfile "lpi_error.c";
 }       
 
