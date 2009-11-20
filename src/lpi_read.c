@@ -63,9 +63,13 @@ void lpi_read_object(lua_State * L, PI_CHANNEL * chan)
             lua_pushnumber(L, n);
             break;
         case LUA_TSTRING:
-            buf = lpi_read_data(L, chan, (size_t)n);
-            lua_pushlstring(L, buf, (size_t)n);
-            free(buf);
+            if (n == 0) lua_pushliteral(L, "");
+            else
+            {
+                buf = lpi_read_data(L, chan, (size_t)n);
+                lua_pushlstring(L, buf, (size_t)n);
+                free(buf);
+            }
             break;
         case LUA_TFUNCTION:
             buf = lpi_read_data(L, chan, (size_t)n);

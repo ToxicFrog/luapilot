@@ -13,6 +13,7 @@ void lpi_broadcast_header(lua_State * L, PI_BUNDLE * bundle, int t, lua_Number n
 
 void lpi_broadcast_data(lua_State * L, PI_BUNDLE * bundle, const char * buf, size_t size)
 {
+    if (size == 0) return;
     LPI_CALL(L, PI_Broadcast, bundle, "%*c", size, buf);
 }
 

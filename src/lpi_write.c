@@ -13,6 +13,7 @@ void lpi_write_header(lua_State * L, PI_CHANNEL * chan, int t, lua_Number n)
 
 void lpi_write_data(lua_State * L, PI_CHANNEL * chan, const char * buf, size_t size)
 {
+    if (size == 0) return;
     LPI_CALL(L, PI_Write, chan, "%*c", size, buf);
 }
 
