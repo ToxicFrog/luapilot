@@ -117,8 +117,6 @@ int lpi_process(lua_State * L)
     lua_newtable(L);                                /* ud fn env emt */
     lua_rawgeti(L, LUA_REGISTRYINDEX, lpi_process_method_handle);
                                                     /* ud fn env emt methods */
-    printf("creating process with handle %d\n", lpi_process_method_handle);
-    printf("%s\n", lua_typename(L, -1));
     lua_setfield(L, -2, "__index");                 /* ud fn env emt */
     lua_setmetatable(L, -2);                        /* ud fn env */
     lua_insert(L, 2);                               /* ud env fn */

@@ -171,6 +171,7 @@ static const char * lpi_bundle_methods[] = {
     "select", "select",
     "trySelect", "trySelect",
     "broadcast", "broadcast",
+    "gather", "gather",
     NULL
 };
 

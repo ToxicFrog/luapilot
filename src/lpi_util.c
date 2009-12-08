@@ -40,8 +40,8 @@ int lpi_methods(lua_State * L, const char * name, const char ** methods, lua_CFu
     lua_newtable(L); /* pilot methods */
     for (int i = 0; methods[i] != NULL; i += 2)
     {
-        lua_getfield(L, -2, methods[i]);    /* pilot methods method */
-        lua_setfield(L, -2, methods[i+1]);  /* pilot methods */
+        lua_getfield(L, -2, methods[i+1]);    /* pilot methods method */
+        lua_setfield(L, -2, methods[i]);  /* pilot methods */
     }
     
     lua_newtable(L);                        /* pilot methods mt */

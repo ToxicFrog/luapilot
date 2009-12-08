@@ -134,7 +134,7 @@ luaL_Reg lpi_channel_mt[] = {
 };
 
 static const char * lpi_channel_methods[] = {
-    "channelHasData", "hasData",
+    "hasData", "channelHasData",
     "read", "read",
     "write", "write",
     "setName", "setName",
