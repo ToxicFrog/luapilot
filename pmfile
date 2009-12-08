@@ -1,3 +1,5 @@
+-- :mode=lua: --
+
 include "pmlib/c.lua"
 
 --
@@ -37,19 +39,19 @@ sources = {
 objects = group(sources)
 
 pilotstatic = lib {
-    install = pm.install "libluapilot.a";
+    install = pm.install "lib/libluapilot.a";
 
     objects;
 }
 
 luapilot = program {
-    install = pm.install "luapilot";
+    install = pm.install "bin/luapilot";
     cfile "luapilot.c";
     pilotstatic;
 }
 
 pilotlib = sharedlib {
-    install = pm.install "luapilot.so";
+    install = pm.install "lib/luapilot.so";
 
     objects;
 }
