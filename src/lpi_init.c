@@ -108,7 +108,7 @@ const luaL_Reg lr_pilot[] = {
 };
 
 /**
- * Library entry point.
+ * Library entry point from Lua
  * Loads all interface functions into global table pilot,
  * initializes the PI_PROCESS and PI_CHANNEL [FIXME: PI_BUNDLE] metatables,
  * and creates a process wrapper for PI_MAIN, as pilot.main.
@@ -135,4 +135,18 @@ int luaopen_pilot(lua_State * L)
 int luaopen_luapilot(lua_State * L)
 {
     return luaopen_pilot(L);
+}
+
+/**
+ * Library entry point from C
+ * Calls the Lua initializer, then configures Pilot
+**/
+int lpi_init(lua_State * L, int * argc, char *** argv)
+{
+    luaopen_pilot(L);
+    int N = LPI_CALL(L, PI_Configure, argc, argv);
+    lua_pushinteger(L, N);
+    lua_setfield(L, -2, "worldsize");
+    lua_pop(L, 1);
+    return N;    
 }
