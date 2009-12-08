@@ -33,7 +33,7 @@
 int lpi_configure(lua_State * L)
 {
     int argc = lua_gettop(L)+1;
-    char ** argv = malloc(argc * sizeof(char *));
+    const char ** argv = malloc(argc * sizeof(char *));
     
     argv[0] = "(lua)";
     for (int i = 1; i < argc; ++i)

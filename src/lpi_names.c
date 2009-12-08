@@ -39,7 +39,7 @@ int lpi_getName(lua_State * L)
     else
         obj = lpi_pipointer(L, 1);
 
-    char * name = LPI_CALL(L, PI_GetName, obj);
+    const char * name = LPI_CALL(L, PI_GetName, obj);
     lua_pushstring(L, name);
 
     return 1;
