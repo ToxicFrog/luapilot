@@ -7,6 +7,7 @@
 #include "lpi_read.h"
 #include "lpi_write.h"
 #include "lpi_names.h"
+#include "lpi_error.h"
 
 /**
  * C/space constructor for Lua channels
@@ -28,7 +29,7 @@ int lpi_channel(lua_State * L)
     PI_PROCESS * from = *(PI_PROCESS **)luaL_checkudata(L, 1, "PI_PROCESS *");
     PI_PROCESS * to = *(PI_PROCESS **)luaL_checkudata(L, 2, "PI_PROCESS *");
 
-    PI_CHANNEL * channel = PI_CreateChannel(from, to);
+    PI_CHANNEL * channel = LPI_CALL(L, PI_CreateChannel, from, to);
     lpi_channel_push(L, channel);
     return 1;
 }
@@ -52,7 +53,11 @@ int lpi_copyChannels(lua_State * L)
         lua_pop(L, 1);
     }
 
-    PI_CHANNEL ** copies = PI_CopyChannels(reverse? PI_REVERSE:PI_SAME, channels, size);
+    PI_CHANNEL ** copies = LPI_CALL(L,
+        PI_CopyChannels,
+        reverse? PI_REVERSE:PI_SAME,
+        channels,
+        size);
 
     lua_newtable(L);
     for (int i = 1; i <= size; ++i)
@@ -82,7 +87,8 @@ int lpi_copyChannels(lua_State * L)
 int lpi_channelHasData(lua_State * L)
 {
     PI_CHANNEL * obj = *(PI_CHANNEL **)luaL_checkudata(L, 1, "PI_CHANNEL *");
-    lua_pushboolean(L, PI_ChannelHasData(obj));
+    int hasdata = LPI_CALL(L, PI_ChannelHasData, obj);
+    lua_pushboolean(L, hasdata);
     return 1;
 }
 

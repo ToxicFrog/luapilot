@@ -58,6 +58,27 @@ int lpi_bundle(lua_State * L)
 }
 
 /**
+ * getChannel
+ **/
+int lpi_getBundleChannel(lua_State * L)
+{
+    PI_BUNDLE * obj = *(PI_BUNDLE **)luaL_checkudata(L, 1, "PI_BUNDLE *");
+    int n = luaL_checkinteger(L, 2);
+    PI_CHANNEL * chan = LPI_CALL(L, PI_GetBundleChannel, obj, n-1);
+
+    if (!chan) /* invalid index. It's not fatal in Pilot, so return nil */
+    {
+        lua_pushnil(L);
+        
+    } else { /* rather than pushing a new fuserdata, grab it from the env */
+        lua_getfenv(L, 1);
+        lua_rawgeti(L, -1, n);
+    }
+    
+    return 1;
+}
+
+/**
  * select
  **/
 int lpi_select(lua_State * L)
@@ -85,27 +106,6 @@ int lpi_trySelect(lua_State * L)
     lpi_getBundleChannel(L);
     lua_pushvalue(L, 2);
     return 2;
-}
-
-/**
- * getChannel
- **/
-int lpi_getBundleChannel(lua_State * L)
-{
-    PI_BUNDLE * obj = *(PI_BUNDLE **)luaL_checkudata(L, 1, "PI_BUNDLE *");
-    int n = luaL_checkinteger(L, 2);
-    PI_CHANNEL * chan = LPI_CALL(L, PI_GetBundleChannel, obj, n-1);
-
-    if (!chan) /* invalid index. It's not fatal in Pilot, so return nil */
-    {
-        lua_pushnil(L);
-        
-    } else { /* rather than pushing a new fuserdata, grab it from the env */
-        lua_getfenv(L, 1);
-        lua_rawgeti(L, -1, n);
-    }
-    
-    return 1;
 }
 
 /**
