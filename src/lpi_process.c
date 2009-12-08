@@ -7,6 +7,8 @@
 #include "lpi_names.h"
 #include "lpi_error.h"
 
+static int lpi_process_method_handle;
+
 static int lpi_process_tostring(lua_State * L)
 {
   luaL_checkudata(L, 1, "PI_PROCESS *");
@@ -52,12 +54,6 @@ luaL_Reg lpi_process_mt[] = {
   { NULL, NULL }
 };
 
-luaL_Reg lpi_process_methods[] = {
-    { "setName",     lpi_setName },
-    { "getName",     lpi_getName },
-    { NULL, NULL }
-};
-
 static int lpi_processThunk(int n, void * L)
 {
     lua_settop(L, 0);
@@ -98,6 +94,9 @@ PI_PROCESS ** lpi_process_push(lua_State * L)
 
 int lpi_process(lua_State * L)
 {
+    /* remove 'self' from stack */
+    lua_remove(L, 1);
+    
     /* verify first argument */
     luaL_checktype(L, 1, LUA_TFUNCTION);
     
@@ -111,12 +110,20 @@ int lpi_process(lua_State * L)
     }
     
     /* create the PI_PROCESS wrapper */
-    PI_PROCESS ** obj = lpi_process_push(L); /* fn env ud */
-    lua_insert(L, 1); /* ud fn env */
-    luaL_register(L, NULL, lpi_process_methods);
-    lua_insert(L, 2); /* ud env fn */
+    PI_PROCESS ** obj = lpi_process_push(L);        /* fn env ud */
+    
+    /* attach __index to the environment so that method lookups work */
+    lua_insert(L, 1);                               /* ud fn env */
+    lua_newtable(L);                                /* ud fn env emt */
+    lua_rawgeti(L, LUA_REGISTRYINDEX, lpi_process_method_handle);
+                                                    /* ud fn env emt methods */
+    printf("creating process with handle %d\n", lpi_process_method_handle);
+    printf("%s\n", lua_typename(L, -1));
+    lua_setfield(L, -2, "__index");                 /* ud fn env emt */
+    lua_setmetatable(L, -2);                        /* ud fn env */
+    lua_insert(L, 2);                               /* ud env fn */
 
-    /* store the process function in it */
+    /* store the process function in the environment */
     lua_setfield(L, -2, "__process");
 
     /* assign the environment table */
@@ -132,10 +139,20 @@ int lpi_process(lua_State * L)
     return 1;
 }
 
+static const char * lpi_process_methods[] = {
+    "getName", "getName",
+    "setName", "setName",
+    NULL
+};
+
 void lpi_process_init(lua_State * L)
 {
+    /* create metatable */
     luaL_newmetatable(L, "PI_PROCESS *");
     luaL_register(L, NULL, lpi_process_mt);
     lua_pop(L, 1);
+    
+    lpi_process_method_handle = lpi_methods(L, "process", lpi_process_methods, lpi_process);
+
     return;
 }

@@ -80,11 +80,15 @@ int lpi_stopMain(lua_State * L)
     return 0;
 }
 
+/**
+ * All of the Pilot functions, apart from the constructors for processes,
+ * channels, and bundles. Those are installed as __call-able tables by
+ * their respective init functions.
+**/
 const luaL_Reg lr_pilot[] = {
     { "configure",      lpi_configure   },
     { "startAll",       lpi_startAll    },
     { "stopMain",       lpi_stopMain    },
-    { "process",        lpi_process     },
     { "log",            lpi_log         },
     { "isLogging",      lpi_isLogging   },
     { "startTime",      lpi_startTime   },
@@ -93,11 +97,9 @@ const luaL_Reg lr_pilot[] = {
     { "getName",        lpi_getName     },
     { "abort",          lpi_abort,      },
     { "copyChannels",   lpi_copyChannels },
-    { "channel",        lpi_channel,    },
     { "channelHasData", lpi_channelHasData },
     { "read",           lpi_read        },
     { "write",          lpi_write       },
-    { "bundle",         lpi_bundle      },
     { "select",         lpi_select      },
     { "trySelect",      lpi_trySelect   },
     { "getBundleSize",  lpi_getBundleSize },

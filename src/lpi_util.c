@@ -23,16 +23,36 @@ int l_checkutype(lua_State * L, int index, const char * type)
 
 void * lpi_pipointer(lua_State * L, int index)
 {
-    void * obj = NULL;
-
     if (!lua_touserdata(L, index)
         || !(l_checkutype(L, index, "PI_PROCESS *")
-             || l_checkutype(L, index, "PI_CHANNEL *")
-             || l_checkutype(L, index, "PI_BUNDLE *")))
+        || l_checkutype(L, index, "PI_CHANNEL *")
+        || l_checkutype(L, index, "PI_BUNDLE *")))
     {
         luaL_error(L, "luapilot: object at stack index %d is not a PI_OBJECT* but rather a %s", index, luaL_typename(L, index));
         return NULL;
     }
 
     return *((void **)lua_touserdata(L, index));
+}
+
+int lpi_methods(lua_State * L, const char * name, const char ** methods, lua_CFunction constructor)
+{
+    lua_newtable(L); /* pilot methods */
+    for (int i = 0; methods[i] != NULL; i += 2)
+    {
+        lua_getfield(L, -2, methods[i]);    /* pilot methods method */
+        lua_setfield(L, -2, methods[i+1]);  /* pilot methods */
+    }
+    
+    lua_newtable(L);                        /* pilot methods mt */
+    lua_pushcfunction(L, constructor);      /* pilot methods mt cons */
+    lua_setfield(L, -2, "__call");          /* pilot methods mt */
+    lua_setmetatable(L, -2);                /* pilot methods */
+    
+    lua_pushvalue(L, -1);
+    int n = luaL_ref(L, LUA_REGISTRYINDEX);
+    
+    lua_setfield(L, -2, name);              /* pilot */
+    
+    return n;
 }

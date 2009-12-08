@@ -6,6 +6,7 @@
 
 #include "lpi_broadcast.h"
 #include "lpi_error.h"
+#include "lpi_util.h"
 
 static void lpi_bundle_push(lua_State * L, PI_BUNDLE * bundle)
 {
@@ -18,6 +19,8 @@ static void lpi_bundle_push(lua_State * L, PI_BUNDLE * bundle)
 
 int lpi_bundle(lua_State * L)
 {
+    lua_remove(L, 1); /* remove 'self' */
+    
     int type;
     const char * type_str = luaL_checkstring(L, 1);
     luaL_checktype(L, 2, LUA_TTABLE);
@@ -155,28 +158,31 @@ static int lpi_bundle_type(lua_State * L)
 luaL_Reg lpi_bundle_mt[] = {
     { "__tostring",  lpi_bundle_tostring },
     { "__type",      lpi_bundle_type },
-/*    { "__index",     lpi_bundle_index }, needs special handling because upvalue */
+    { "__len",       lpi_getBundleSize },
+/*  { "__index",     lpi_bundle_index }, needs special handling because upvalue */
     { NULL, NULL }
 };
 
-luaL_Reg lpi_bundle_methods[] = {
-    { "getSize",     lpi_getBundleSize },
-    { "getChannel",  lpi_getBundleChannel },
-    { "select",      lpi_select },
-    { "trySelect",   lpi_trySelect },
-    { "broadcast",   lpi_broadcast },
-    { NULL, NULL }
+static const char * lpi_bundle_methods[] = {
+    "getName", "getName",
+    "setName", "setName",
+    "getSize", "getBundleSize",
+    "getChannel", "getBundleChannel",
+    "select", "select",
+    "trySelect", "trySelect",
+    "broadcast", "broadcast",
+    NULL
 };
 
 void lpi_bundle_init(lua_State * L)
 {
-    luaL_newmetatable(L, "PI_BUNDLE *");          /* mt */
-    luaL_register(L, NULL, lpi_bundle_mt);
-
-    lua_newtable(L);                              /* mt mm */
-    luaL_register(L, NULL, lpi_bundle_methods);
-    lua_pushcclosure(L, lpi_bundle_index, 1);     /* mt __index */
-    lua_setfield(L, -2, "__index");               /* mt */
-    lua_pop(L, 1);                                /* */
+    int method_ref = lpi_methods(L, "bundle", lpi_bundle_methods, lpi_bundle);
+    
+    luaL_newmetatable(L, "PI_BUNDLE *");            /* mt */
+    luaL_register(L, NULL, lpi_bundle_mt);          /* mt */
+    lua_rawgeti(L, LUA_REGISTRYINDEX, method_ref);  /* mt methods */
+    lua_pushcclosure(L, lpi_bundle_index, 1);       /* mt __index */
+    lua_setfield(L, -2, "__index");                 /* mt */
+    lua_pop(L, 1);                                  /* */
     return;
 }

@@ -8,6 +8,7 @@
 #include "lpi_write.h"
 #include "lpi_names.h"
 #include "lpi_error.h"
+#include "lpi_util.h"
 
 /**
  * C/space constructor for Lua channels
@@ -26,6 +27,7 @@ static void lpi_channel_push(lua_State * L, PI_CHANNEL * channel)
  **/
 int lpi_channel(lua_State * L)
 {
+    lua_remove(L, 1); /* remove 'self' since this is called as a metamethod */
     PI_PROCESS * from = *(PI_PROCESS **)luaL_checkudata(L, 1, "PI_PROCESS *");
     PI_PROCESS * to = *(PI_PROCESS **)luaL_checkudata(L, 2, "PI_PROCESS *");
 
@@ -131,16 +133,13 @@ luaL_Reg lpi_channel_mt[] = {
     { NULL, NULL }
 };
 
-/**
- * Table of methods
- **/
-luaL_Reg lpi_channel_methods[] = {
-    { "hasData", lpi_channelHasData },
-    { "read", lpi_read },
-    { "write", lpi_write },
-    { "setName", lpi_setName },
-    { "getName", lpi_getName },
-    { NULL, NULL }
+static const char * lpi_channel_methods[] = {
+    "channelHasData", "hasData",
+    "read", "read",
+    "write", "write",
+    "setName", "setName",
+    "getName", "getName",
+    NULL
 };
 
 /**
@@ -148,16 +147,14 @@ luaL_Reg lpi_channel_methods[] = {
  **/
 void lpi_channel_init(lua_State * L)
 {
-    /* initialize metamethods */
+    int method_ref = lpi_methods(L, "channel", lpi_channel_methods, lpi_channel);
+    
+    /* create metatable */
     luaL_newmetatable(L, "PI_CHANNEL *");
     luaL_register(L, NULL, lpi_channel_mt);
-
-    /* create the methods table and point __index at it */
-    lua_newtable(L);
-    luaL_register(L, NULL, lpi_channel_methods);
+    lua_rawgeti(L, LUA_REGISTRYINDEX, method_ref);
     lua_setfield(L, -2, "__index");
-
-    /* cleanup */
     lua_pop(L, 1);
+
     return;
 }
