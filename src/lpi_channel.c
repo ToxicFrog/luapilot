@@ -102,13 +102,13 @@ int lpi_channelHasData(lua_State * L)
 /**
  * __tostring
  *
- * returns "PI_CHANNEL: <address>"
+ * returns "PI_CHANNEL '<name>': <address>"
  **/
 static int lpi_channel_tostring(lua_State * L)
 {
     PI_CHANNEL * obj = *(PI_CHANNEL **)luaL_checkudata(L, 1, "PI_CHANNEL *");
-    //  lua_pushfstring(L, "%s '%s': %p", "PI_CHANNEL", PI_GetName(*obj), (void *)obj);
-    lua_pushfstring(L, "%s: %p", "PI_CHANNEL", (void *)obj);
+    const char * name = LPI_CALL(L, PI_GetName, obj);
+    lua_pushfstring(L, "%s '%s': %p", "PI_CHANNEL", name, (void *)obj);
     return 1;
 }
 

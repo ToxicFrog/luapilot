@@ -130,8 +130,8 @@ int lpi_getBundleSize(lua_State * L)
 static int lpi_bundle_tostring(lua_State * L)
 {
     PI_BUNDLE * obj = *(PI_BUNDLE **)luaL_checkudata(L, 1, "PI_BUNDLE *");
-    //  lua_pushfstring(L, "%s '%s': %p", "PI_BUNDLE", PI_GetName(*obj), (void *)obj);
-    lua_pushfstring(L, "%s: %p", "PI_BUNDLE", (void *)obj);
+    const char * name = LPI_CALL(L, PI_GetName, obj);
+    lua_pushfstring(L, "%s '%s': %p", "PI_BUNDLE", name, (void *)obj);
     return 1;
 }
 

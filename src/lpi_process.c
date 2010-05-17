@@ -11,8 +11,9 @@ static int lpi_process_method_handle;
 
 static int lpi_process_tostring(lua_State * L)
 {
-  luaL_checkudata(L, 1, "PI_PROCESS *");
-  lua_pushfstring(L, "%s: %p", "PI_PROCESS", lua_topointer(L, 1));
+  PI_PROCESS * obj = *(PI_PROCESS **)luaL_checkudata(L, 1, "PI_PROCESS *");
+  const char * name = LPI_CALL(L, PI_GetName, obj);
+  lua_pushfstring(L, "%s '%s': %p", "PI_PROCESS", name, (void *)obj);
   return 1;
 }
 
