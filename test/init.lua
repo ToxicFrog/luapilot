@@ -1,4 +1,7 @@
+local rank = require("mpirank")()
+
 function printf(...)
+    if rank > 0 then return end
     return io.write(string.format(...))
 end
 
@@ -22,9 +25,16 @@ function runsuite(name, longname)
     
     test(longname, not failed, "  ")
 end
-    
+
+-- cross-suite data can be stored here
+tdata = {}
+
 -- test that the library loaded properly
 runsuite("load", "Library initialization")
 
 assert(pilot.worldsize > 2, "need at least 3 nodes to run test suite")
 
+runsuite("configure", "Configuration phase")
+runsuite("start", "Run phase")
+runsuite("readwrite", "Read/Write")
+runsuite("stop", "Shutdown")
