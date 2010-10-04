@@ -127,10 +127,6 @@ int luaopen_pilot(lua_State * L)
     lpi_channel_init(L);
     lpi_bundle_init(L);
 
-    PI_PROCESS ** Pmain = lpi_process_push(L);
-    lua_setfield(L, -2, "main");*Pmain = PI_MAIN;
-    *Pmain = PI_MAIN;
-
     return 1;
 }                                                                 
 

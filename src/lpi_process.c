@@ -93,6 +93,16 @@ PI_PROCESS ** lpi_process_push(lua_State * L)
     return obj;
 }
 
+static void lpi_process_environfy(lua_State * L)
+{
+    /* attach __index to the environment so that method lookups work */
+    lua_newtable(L);                                /* env emt */
+    lua_rawgeti(L, LUA_REGISTRYINDEX, lpi_process_method_handle);
+                                                    /* env emt methods */
+    lua_setfield(L, -2, "__index");                 /* env emt */
+    lua_setmetatable(L, -2);                        /* env */
+}
+
 int lpi_process(lua_State * L)
 {
     /* remove 'self' from stack */
@@ -115,15 +125,11 @@ int lpi_process(lua_State * L)
     
     /* attach __index to the environment so that method lookups work */
     lua_insert(L, 1);                               /* ud fn env */
-    lua_newtable(L);                                /* ud fn env emt */
-    lua_rawgeti(L, LUA_REGISTRYINDEX, lpi_process_method_handle);
-                                                    /* ud fn env emt methods */
-    lua_setfield(L, -2, "__index");                 /* ud fn env emt */
-    lua_setmetatable(L, -2);                        /* ud fn env */
-    lua_insert(L, 2);                               /* ud env fn */
+    lpi_process_environfy(L);
 
     /* store the process function in the environment */
-    lua_setfield(L, -2, "__process");
+    lua_insert(L, 2);                               /* ud env fn */
+    lua_setfield(L, -2, "__process");               /* ud env */
 
     /* assign the environment table */
     lua_setfenv(L, 1);
@@ -152,6 +158,14 @@ void lpi_process_init(lua_State * L)
     lua_pop(L, 1);
     
     lpi_process_method_handle = lpi_methods(L, "process", lpi_process_methods, lpi_process);
+
+    PI_PROCESS ** Pmain = lpi_process_push(L);
+    lua_newtable(L);
+    lpi_process_environfy(L);
+    lua_setfenv(L, -2);
+    
+    lua_setfield(L, -2, "main");
+    *Pmain = PI_MAIN;
 
     return;
 }
