@@ -46,6 +46,7 @@ pilotstatic = lib {
 
 luapilot = program {
     install = pm.install "bin/luapilot";
+
     cfile "luapilot.c";
     pilotstatic;
 }
@@ -56,9 +57,11 @@ pilotlib = sharedlib {
     objects;
 }
 
-default = group { luapilot, pilotlib, pilotstatic }
+default = group { luapilot }
 
 test = simple {
-     command = "mpiexec -c 4 lua test.lua";
-     outputs = {"%U%"};
+    command = "mpiexec -c 4 bin/luapilot test.lua";
+    outputs = {"%U%"};
+
+    luapilot;
 }
