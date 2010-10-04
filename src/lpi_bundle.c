@@ -124,8 +124,14 @@ int lpi_getBundleSize(lua_State * L)
 }
 
 
+/******************************************************************************
+ * Metamethods
+ ******************************************************************************/
+
 /**
-* Metamethods
+ * __tostring
+ * 
+ * returns "PI_BUNDLE 'name': 0x1234"
 **/
 static int lpi_bundle_tostring(lua_State * L)
 {
@@ -135,6 +141,13 @@ static int lpi_bundle_tostring(lua_State * L)
     return 1;
 }
 
+/**
+ * __index
+ *
+ * Allows you to go bundle[n] to get the n'th contained channel, by forwarding
+ * to bundle:getChannel.
+ * Otherwise tries to look it up in the table of methods.
+**/
 static int lpi_bundle_index(lua_State * L)
 {
     luaL_checkudata(L, 1, "PI_BUNDLE *");
@@ -148,6 +161,11 @@ static int lpi_bundle_index(lua_State * L)
     return 1;
 }
 
+/**
+ * __type
+ *
+ * returns "PI_BUNDLE"
+**/
 static int lpi_bundle_type(lua_State * L)
 {
     luaL_checkudata(L, 1, "PI_BUNDLE *");
