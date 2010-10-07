@@ -15,7 +15,7 @@ void lpi_read_header(lua_State * L, PI_CHANNEL * chan, int * t, lua_Number * n)
 char * lpi_read_data(lua_State * L, PI_CHANNEL * chan, size_t size)
 {
     char * buf = malloc(size);
-    LPI_CALL(L, PI_Read, chan, "%*c", size, buf);
+    LPI_CALL(L, PI_Read, chan, "%*b", size, buf);
     return buf;
 }
 
