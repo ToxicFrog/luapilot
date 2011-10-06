@@ -1,38 +1,18 @@
-
-                      BUILDING
-
-Luapilot uses the Prime Mover build system. It is a self-contained build
-system which will bootstrap itself the first time it is run. To build
-luapilot, simply run it:
-
-    ./pm
-
-
+                      INSTALL
+                      
+For instructions on compiling luapilot, see the file INSTALL.
 
                       USAGE
 
-Luapilot builds as two components: a Lua/C module (pilot.so) and a stand alone
-executable (lpilot). Pilot.so is provided for environments which already have
-a Lua interpreter and wish to load Pilot from inside it; lpilot is a simple
-launcher that preloads the pilot library and then (in effect) calls dofile on
-its first command line argument.
+Luapilot builds as two components: a Lua/C module (pilot.so) and a stand alone executable (lpilot). Pilot.so is provided for environments which already have a Lua interpreter and wish to load Pilot from inside it; lpilot is a simple launcher that preloads the pilot library. It is based on the standard Lua command line interpreter.
 
-Thus, the two commands are loosely equivalent:
-
-    mpiexec lua -lpilot foo.lua
-
-    mpiexec ./lpilot foo.lua
-
-
+Use of the module is deprecated and support for it will probably be removed entirely at some point.
 
     	              API REFERENCE
 
-NOTE: this is a very quick and dirty reference that assumes prior knowledge of
-Pilot. At some point in the future this will be replaced with a comprehensive
-manual with no such assumption, but that time is not now.
+NOTE: this is a very quick and dirty reference that assumes prior knowledge of Pilot. At some point in the future this will be replaced with a comprehensive manual with no such assumption, but that time is not now.
 
-The library manifests itself in global table "pilot". If using the lpilot
-executable, it is already loaded; if using the module, you can get it with
+The library manifests itself in global table "pilot". If using the lpilot executable, it is already loaded; if using the module, you can get it with
 
     require "pilot"
 
@@ -40,8 +20,8 @@ executable, it is already loaded; if using the module, you can get it with
 
         Variables
 
-pilot.main		equivalent to PI_MAIN in C; process 0.
-pilot.worldsize		the number of nodes available to spawn processes on.
+pilot.main          equivalent to PI_MAIN in C; process 0.
+pilot.worldsize     the number of nodes available to spawn processes on.
 
 
 
@@ -50,18 +30,12 @@ pilot.worldsize		the number of nodes available to spawn processes on.
 
     pilot.configure(...)
 
-Equivalent to PI_Configure. Present only in the module, and must be called
-before using any other pilot functions or accessing any pilot variables.
-Returns the worldsize.
+Equivalent to PI_Configure. Present only in the module, and must be called before using any other pilot functions or accessing any pilot variables. Returns the worldsize.
 
 
     pilot.process(fn, ...)
 
-Initialize a new process running fn. Returns a new PI_PROCESS; this process
-handle will be passed to the process function when it starts up, immediately
-followed by all of the varargs. Note that setting fields of the process is
-permissible, and any fields set before startAll is called will be available
-to the process:
+Initialize a new process running fn. Returns a new PI_PROCESS; this process handle will be passed to the process function when it starts up, immediately followed by all of the varargs. Note that setting fields of the process is permissible, and any fields set before startAll is called will be available to the process:
 
     function foo(self, n)
     	print(self.name, n)
@@ -70,20 +44,17 @@ to the process:
     p1 = pilot.process(foo, 0)
     p1.name = "p1"
 
-This allows you to store process-associated channels and whatnot in the
-process structure itself.
+This allows you to store process-associated channels and whatnot in the process structure itself.
 
 
     pilot.startAll()
 
-Launch all created processes. Except in P0 (main), this function does not
-return.
+Launch all created processes. Except in P0 (main), this function does not return.
 
 
     pilot.stopMain(n)
 
-Suspend main until all other processes have returned, then shut down
-Pilot. Returns n (a number) to MPI as the process completion code.
+Suspend main until all other processes have returned, then shut down Pilot. Returns n (a number) to MPI as the process completion code.
 
 
     pilot.log(message)
@@ -109,15 +80,13 @@ Returns the elapsed time since the last call to startTime, in seconds.
     pilot.setName(object, name)
     object:setName(name)
 
-Sets the "friendly name" of a Pilot object (PI_PROCESS, PI_CHANNEL, or
-PI_BUNDLE). If name is omitted, sets it to ''.
+Sets the "friendly name" of a Pilot object (PI_PROCESS, PI_CHANNEL, or PI_BUNDLE). If name is omitted, sets it to ''.
 
 
     pilot.getName(object)
     object:getName()
 
-Returns the "friendly name" of a Pilot object. If no object is specified,
-returns the name of the current process.
+Returns the "friendly name" of a Pilot object. If no object is specified, returns the name of the current process.
 
 
     pilot.abort(message)
@@ -127,17 +96,12 @@ Abort the application, reporting message as the reason.
 
     pilot.channel(from, to)
 
-Create a communication channel between 'from' and 'to, which must be
-PI_PROCESSes. Returns a new PI_CHANNEL which 'from' can call write on and 'to'
-can call read on.
+Create a communication channel between 'from' and 'to, which must be PI_PROCESSes. Returns a new PI_CHANNEL which 'from' can call write on and 'to' can call read on.
 
 
     pilot.copyChannels(channels, [reverse])
 
-Copy a list of channels. Returns a list of newly created channels between the
-same two endpoints, at the same indexes. If _reverse_ is logical true, the
-channels will be created with the endpoints reversed; eg, a list of channels
-from A to B,C,D would result in copies from B,C,D to A.
+Copy a list of channels. Returns a list of newly created channels between the same two endpoints, at the same indexes. If _reverse_ is logical true, the channels will be created with the endpoints reversed; eg, a list of channels from A to B,C,D would result in copies from B,C,D to A.
 
 
     pilot.write(channel, ...)
@@ -145,8 +109,7 @@ from A to B,C,D would result in copies from B,C,D to A.
     channel:write(...)
     channel:send(...)
 
-Write one or more objects to a channel. At present strings, numbers, booleans,
-and nil are permitted.
+Write one or more objects to a channel. At present strings, numbers, booleans, and nil are permitted.
 
 
     pilot.read(channel, n)
@@ -154,25 +117,20 @@ and nil are permitted.
     channel:read(n)
     channel:receive(n)
 
-Read n objects from a channel and return them all. n, if omitted, defaults to
-1. If there are not enough objects in the channel, blocks until there are.
+Read n objects from a channel and return them all. n, if omitted, defaults to 1. If there are not enough objects in the channel, blocks until there are.
 
 
     pilot.channelHasData(channel)
     channel:hasData()
 
-Returns true if the channel contains at least one object to read (ie, if
-read(channel) would not block), and false otherwise.
+Returns true if the channel contains at least one object to read (ie, if read(channel) would not block), and false otherwise.
 
 
     pilot.bundle(type, channels)
 
-Create a bundle, a collection of related channel endpoints. _type_ is the
-string "select", "gather", or "broadcast". Note that although the creation of
-all three bundle types is supported, at present the actual broadcast and
-gather calls are not. Returns a new bundle object.
-
+Create a bundle, a collection of related channel endpoints. _type_ is the string "select", "gather", or "broadcast". Note that "gather", at present, only supports single-message types - nil, boolean, and number. "scatter" and "reduce" are not yet supported.
     
+
     pilot.getBundleSize(bundle)
 
 Returns the number of channels in the bundle.
@@ -181,21 +139,19 @@ Returns the number of channels in the bundle.
     pilot.getBundleChannel(bundle, index)
     bundle[index]
 
-Returns the channel at index n in the bundle. This is the same index the
-channel had in the original list used to create the bundle. Note that in Lua,
-bundles, like tables, are 1-indexed.
+Returns the channel at index n in the bundle. This is the same index the channel had in the original list used to create the bundle. Note that in Lua, bundles, like tables, are 1-indexed.
 
 
     pilot.select(bundle)
     bundle:select()
 
-Blocks until a channel in the bundle is available for reading (that is to say,
-calling read(1) on it would not block). Returns two values: the channel, and
-its index in the bundle.
+Blocks until a channel in the bundle is available for reading (that is to say, calling read(1) on it would not block). Returns two values: the channel, and its index in the bundle.
 
 
     pilot.trySelect(bundle)
     bundle:trySelect()
 
-A nonblocking version of select. If a channel in the bundle is available for
-read, behaves as select. Otherwise returns nil.
+A nonblocking version of select. If a channel in the bundle is available for read, behaves as select. Otherwise returns nil.
+
+
+:wrap=soft:

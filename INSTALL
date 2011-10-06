@@ -1,0 +1,9 @@
+To install Luapilot, you will need the following:
+- a bourne-compatible shell and a C compiler, for the build system
+- Pilot 2.x, which you can download from [1]
+- Lua 5.1.x, which you can download from [2]
+- an MPI implementation
+
+If you have all of these, just run './pm' and, after a bit of thought, it should generate a 'bin/luapilot' binary ready for use. If your header or library files are installed in an unusual place, or your MPI library doesn't provide a compiler wrapper that answers to the name 'mpicc', you may need to edit the file 'pmfile' to tell it where to find everything.
+
+:wrap=soft:

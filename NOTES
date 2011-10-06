@@ -9,7 +9,7 @@ unimpl	beta	done
 	-----
                 PI_PROCESS
                 PI_CHANNEL
-        PI_BUNDLE
+            PI_BUNDLE
 
 
 	Functions
@@ -36,7 +36,18 @@ unimpl	beta	done
                 PI_GetBundleChannel
                 PI_GetBundleSize
         PI_Broadcast
-PI_Gather
+        PI_Gather
+PI_Scatter
+PI_Reduce
 
 
+TODO
+Serialization is much faster than message passing; when sending a table, we should serialize the table and then send that as a single message rather than generating two messages for each KV pair in the table. Something similar to the serialization format from Felt should be usable here.
 
+In C, sending slices of an array (using pointers into it) is pretty common. Do we want easy support for this in the serializer? Or should people just generate separate tables to begin with (which is after all quite easy in Lua)?
+
+There's a lot of common code between read/gather/reduce and between write/scatter/broadcast. Can I refactor this so that they use higher-order functions or, failing that, macros?
+
+The documentation needs to be completely rewritten, and a proper manual provided in RST format.
+
+:wrap=soft:

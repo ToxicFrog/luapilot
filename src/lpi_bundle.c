@@ -177,7 +177,7 @@ luaL_Reg lpi_bundle_mt[] = {
     { "__tostring",  lpi_bundle_tostring },
     { "__type",      lpi_bundle_type },
     { "__len",       lpi_getBundleSize },
-/*  { "__index",     lpi_bundle_index }, needs special handling because upvalue */
+/*  { "__index",     lpi_bundle_index }, needs special handling - see lpi_bundle_init */
     { NULL, NULL }
 };
 

@@ -1,3 +1,11 @@
+/*
+    Main executable for the 'luapilot' interpreter.
+    
+    This is based on the code for the 'lua' command-line/interactive interpreter
+    from the lua 5.1.4 distribution, except that it also automatically loads
+    and initializes Pilot.
+*/
+
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>

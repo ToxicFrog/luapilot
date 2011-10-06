@@ -93,13 +93,14 @@ void lpi_write_object(lua_State * L, int index, PI_CHANNEL * chan)
             lpi_write_table(L, index, chan);
             break;
         default:
-            luaL_typerror(L, index, "nil, number, boolean, or string");
+            luaL_typerror(L, index, "nil, number, boolean, string, function, table, or __sendable");
             break;
     }
 }
 
 int lpi_write(lua_State * L)
 {
+	
     PI_CHANNEL * chan = *(PI_CHANNEL **)luaL_checkudata(L, 1, "PI_CHANNEL *");
 
     for (int i = 2; i <= lua_gettop(L); ++i)
